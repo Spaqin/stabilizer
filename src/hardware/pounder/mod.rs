@@ -210,8 +210,6 @@ impl Default for ClockConfig {
     }
 }
 
-//TODO: miniconf -> tree updated here
-
 #[derive(Copy, Clone, Debug, Default, Deserialize, Serialize, Tree)]
 pub struct PounderConfig {
     #[tree]
