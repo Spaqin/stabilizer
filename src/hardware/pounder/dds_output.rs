@@ -55,7 +55,7 @@
 use log::warn;
 use stm32h7xx_hal as hal;
 
-use super::{hrtimer::HighResTimerE, Error, Profile, QspiInterface};
+use super::{hrtimer::HighResTimerE, Profile, QspiInterface};
 use ad9959::{Channel, Mode, ProfileSerializer};
 
 /// The DDS profile update stream.

@@ -16,7 +16,7 @@ use minimq::{DeferredPublication, Publication};
 use serde::Serialize;
 
 use super::NetworkReference;
-use crate::hardware::{adc::AdcCode, afe::Gain, dac::DacCode, SystemTimer};
+use crate::hardware::{adc::AdcCode, afe::Gain, dac::DacCode, SystemTimer, pounder::PounderConfig};
 
 /// Default metadata message if formatting errors occur.
 const DEFAULT_METADATA: &str = "{\"message\":\"Truncated: See USB terminal\"}";
@@ -85,6 +85,9 @@ pub struct PounderTelemetry {
 
     /// The detected RF power into IN channels
     pub input_power: [f32; 2],
+
+    /// The configuration of the clock and DDS channels
+    pub config: PounderConfig,
 }
 
 impl TelemetryBuffer {

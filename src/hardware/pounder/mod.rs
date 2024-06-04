@@ -8,7 +8,7 @@ use ad9959::{
 };
 use embedded_hal_02::blocking::spi::Transfer;
 use enum_iterator::Sequence;
-use miniconf::Miniconf;
+use miniconf::Tree;
 use rf_power::PowerMeasurementInterface;
 use serde::{Deserialize, Serialize};
 use stm32h7xx_hal::time::MegaHertz;
@@ -127,7 +127,7 @@ impl From<Channel> for GpioPin {
     }
 }
 
-#[derive(Serialize, Deserialize, Copy, Clone, Debug, Miniconf)]
+#[derive(Serialize, Deserialize, Copy, Clone, Debug, Tree)]
 pub struct DdsChannelConfig {
     pub frequency: f32,
     pub phase_offset: f32,
@@ -212,12 +212,13 @@ impl Default for ClockConfig {
 
 //TODO: miniconf -> tree updated here
 
-#[derive(Copy, Clone, Debug, Default, Tree)]
+#[derive(Copy, Clone, Debug, Default, Deserialize, Serialize, Tree)]
 pub struct PounderConfig {
+    #[tree]
     pub clock: ClockConfig,
-    #[tree(depth(2))]
+    #[tree(depth = 2)]
     pub in_channel: [ChannelConfig; 2],
-    #[tree(depth(2))]
+    #[tree(depth = 2)]
     pub out_channel: [ChannelConfig; 2],
 }
 
@@ -716,13 +717,14 @@ impl setup::PounderDevices {
         }
     }
 
-    pub fn get_telemetry(&mut self) -> PounderTelemetry {
+    pub fn get_telemetry(&mut self, config: PounderConfig) -> PounderTelemetry {
         PounderTelemetry {
             temperature: self.pounder.lm75.read_temperature().unwrap(),
             input_power: [
                 self.pounder.measure_power(Channel::In0).unwrap(),
                 self.pounder.measure_power(Channel::In1).unwrap(),
             ],
+            config,
         }
     }
 }
