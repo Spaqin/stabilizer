@@ -29,7 +29,7 @@
 
 use core::{
     convert::TryFrom,
-    mem::MaybeUninit,
+    mem::{MaybeUninit, size_of},
     sync::atomic::{fence, Ordering},
 };
 

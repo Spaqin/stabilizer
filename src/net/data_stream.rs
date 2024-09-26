@@ -25,7 +25,7 @@
 
 #![allow(non_camel_case_types)] // https://github.com/rust-embedded/heapless/issues/411
 
-use core::{fmt::Write, mem::MaybeUninit};
+use core::{fmt::Write, mem::{MaybeUninit, size_of_val}};
 use heapless::{
     box_pool,
     pool::boxed::{Box, BoxBlock},

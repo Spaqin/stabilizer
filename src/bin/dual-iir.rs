@@ -28,7 +28,7 @@
 #![no_std]
 #![no_main]
 
-use core::mem::MaybeUninit;
+use core::mem::{MaybeUninit, size_of};
 use core::sync::atomic::{fence, Ordering};
 use miniconf::{Leaf, Tree};
 use serde::{Deserialize, Serialize};
