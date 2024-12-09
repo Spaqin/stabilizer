@@ -8,7 +8,7 @@ use ad9959::{
 };
 use embedded_hal_02::blocking::spi::Transfer;
 use enum_iterator::Sequence;
-use miniconf::Tree;
+use miniconf::{Leaf, Tree};
 use rf_power::PowerMeasurementInterface;
 use serde::{Deserialize, Serialize};
 use stm32h7xx_hal::time::MegaHertz;
@@ -129,17 +129,17 @@ impl From<Channel> for GpioPin {
 
 #[derive(Serialize, Deserialize, Copy, Clone, Debug, Tree)]
 pub struct DdsChannelConfig {
-    pub frequency: f32,
-    pub phase_offset: f32,
-    pub amplitude: f32,
+    pub frequency: Leaf<f32>,
+    pub phase_offset: Leaf<f32>,
+    pub amplitude: Leaf<f32>,
 }
 
 impl Default for DdsChannelConfig {
     fn default() -> Self {
         Self {
-            frequency: 0.0,
-            phase_offset: 0.0,
-            amplitude: 0.0,
+            frequency: 0.0.into(),
+            phase_offset: 0.0.into(),
+            amplitude: 0.0.into(),
         }
     }
 }
@@ -165,14 +165,14 @@ impl TryFrom<(ClockConfig, ChannelConfig)> for Profile {
         (clocking, channel): (ClockConfig, ChannelConfig),
     ) -> Result<Self, Self::Error> {
         let system_clock_frequency =
-            clocking.reference_clock * clocking.multiplier as f32;
+            *clocking.reference_clock * *clocking.multiplier as f32;
         Ok(Profile {
             frequency_tuning_word: frequency_to_ftw(
-                channel.dds.frequency,
+                *channel.dds.frequency,
                 system_clock_frequency,
             )?,
-            phase_offset: phase_to_pow(channel.dds.phase_offset)?,
-            amplitude_control: amplitude_to_acr(channel.dds.amplitude)?,
+            phase_offset: phase_to_pow(*channel.dds.phase_offset)?,
+            amplitude_control: amplitude_to_acr(*channel.dds.amplitude)?,
         })
     }
 }
@@ -181,31 +181,31 @@ impl TryFrom<(ClockConfig, ChannelConfig)> for Profile {
 pub struct ChannelConfig {
     #[tree]
     pub dds: DdsChannelConfig,
-    pub attenuation: f32,
+    pub attenuation: Leaf<f32>,
 }
 
 impl Default for ChannelConfig {
     fn default() -> Self {
         ChannelConfig {
             dds: DdsChannelConfig::default(),
-            attenuation: 31.5,
+            attenuation: 31.5.into(),
         }
     }
 }
 
 #[derive(Serialize, Deserialize, Copy, Clone, Debug, PartialEq, Tree)]
 pub struct ClockConfig {
-    pub multiplier: u8,
-    pub reference_clock: f32,
-    pub external_clock: bool,
+    pub multiplier: Leaf<u8>,
+    pub reference_clock: Leaf<f32>,
+    pub external_clock: Leaf<bool>,
 }
 
 impl Default for ClockConfig {
     fn default() -> Self {
         Self {
-            multiplier: 5,
-            reference_clock: MegaHertz::MHz(100).to_Hz() as f32,
-            external_clock: false,
+            multiplier: 5.into(),
+            reference_clock: (MegaHertz::MHz(100).to_Hz() as f32).into(),
+            external_clock: false.into(),
         }
     }
 }
@@ -214,9 +214,9 @@ impl Default for ClockConfig {
 pub struct PounderConfig {
     #[tree]
     pub clock: ClockConfig,
-    #[tree(depth = 2)]
+    #[tree]
     pub in_channel: [ChannelConfig; 2],
-    #[tree(depth = 2)]
+    #[tree]
     pub out_channel: [ChannelConfig; 2],
 }
 
@@ -660,19 +660,19 @@ impl setup::PounderDevices {
     ) {
         if *clocking != settings.clock {
             match validate_clocking(
-                settings.clock.reference_clock,
-                settings.clock.multiplier,
+                *settings.clock.reference_clock,
+                *settings.clock.multiplier,
             ) {
                 Ok(_frequency) => {
                     self.pounder
-                        .set_ext_clk(settings.clock.external_clock)
+                        .set_ext_clk(*settings.clock.external_clock)
                         .unwrap();
 
                     self.dds_output
                         .builder()
                         .set_system_clock(
-                            settings.clock.reference_clock,
-                            settings.clock.multiplier,
+                            *settings.clock.reference_clock,
+                            *settings.clock.multiplier,
                         )
                         .unwrap()
                         .write();
@@ -703,7 +703,7 @@ impl setup::PounderDevices {
 
                     if let Err(err) = self.pounder.set_attenuation(
                         pounder_channel,
-                        channel_config.attenuation,
+                        *channel_config.attenuation,
                     ) {
                         log::error!("Invalid attenuation settings: {:?}", err)
                     }
