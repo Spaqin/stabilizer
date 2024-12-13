@@ -248,7 +248,7 @@ mod app {
     #[shared]
     struct Shared {
         usb: UsbDevice,
-        network: NetworkUsers<Lockin, 2>,
+        network: NetworkUsers<Lockin, 5>,
         settings: Settings,
         active_settings: Lockin,
         telemetry: TelemetryBuffer,

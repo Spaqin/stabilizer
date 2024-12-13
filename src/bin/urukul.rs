@@ -104,21 +104,21 @@ mod app {
     #[shared]
     struct Shared {
         usb: UsbDevice,
-        network: NetworkUsers<App, 3>,
+        network: NetworkUsers<App, 5>,
         settings: Settings,
     }
 
     #[local]
     struct Local {
         urukul: Urukul,
-        usb_terminal: SerialTerminal<Settings, 4>,
+        usb_terminal: SerialTerminal<Settings, 5>,
     }
 
     #[init]
     fn init(c: init::Context) -> (Shared, Local) {
         let clock = SystemTimer::new(|| Systick::now().ticks());
 
-        let (stabilizer, _pounder) = hardware::setup::setup::<Settings, 4>(
+        let (stabilizer, _pounder) = hardware::setup::setup::<Settings, 5>(
             c.core,
             c.device,
             clock,
