@@ -225,7 +225,7 @@ mod app {
     #[shared]
     struct Shared {
         usb: UsbDevice,
-        network: NetworkUsers<DualIir, 5>,
+        network: NetworkUsers<DualIir, 6>,
         settings: Settings,
         active_settings: DualIir,
         telemetry: TelemetryBuffer,
@@ -235,7 +235,7 @@ mod app {
 
     #[local]
     struct Local {
-        usb_terminal: SerialTerminal<Settings, 5>,
+        usb_terminal: SerialTerminal<Settings, 6>,
         sampling_timer: SamplingTimer,
         digital_inputs: (DigitalInput0, DigitalInput1),
         afes: (AFE0, AFE1),
@@ -252,7 +252,7 @@ mod app {
         let clock = SystemTimer::new(|| Systick::now().ticks());
 
         // Configure the microcontroller
-        let (mut stabilizer, pounder) = hardware::setup::setup::<Settings, 5>(
+        let (mut stabilizer, pounder) = hardware::setup::setup::<Settings, 6>(
             c.core,
             c.device,
             clock,
